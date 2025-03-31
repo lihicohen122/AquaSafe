@@ -1,0 +1,25 @@
+# Ignore Python virtual environment
+.venv/
+venv/
+
+# Ignore Node.js dependencies
+node_modules/
+
+# Ignore Python bytecode files
+__pycache__/
+*.pyc
+
+# Ignore log files
+*.log
+
+# Ignore IDE files (e.g., VSCode, PyCharm)
+.idea/
+.vscode/
+
+# Ignore build and dist directories
+dist/
+build/
+.egg/
+
+# Ignore .env files (environment variables)
+.env
