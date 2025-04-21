@@ -1,23 +1,23 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./Homepage.css"; // Import CSS for styling
+import axios from "axios";
+import "./Homepage.css";
 
 const Homepage = () => {
   const navigate = useNavigate();
+  const [groups, setGroups] = useState([]);
 
-  // Mock data for groups (replace with actual data from your backend or state)
-  const groups = [
-    { id: 1, name: "Coral Divers" },
-    { id: 2, name: "Deep Sea Explorers" },
-    { id: 3, name: "Blue Ocean Team" },
-  ];
+  useEffect(() => {
+    axios.get("http://localhost:5000/groups")
+      .then(response => setGroups(response.data))
+      .catch(error => console.error("Error fetching groups:", error));
+  }, []);
 
   const handleGroupClick = (groupId) => {
     navigate(`/group/${groupId}`);
   };
 
   const handleAddGroup = () => {
-    // Logic for adding a group (e.g., open a modal or navigate to a form)
     alert("Add Group functionality to be implemented!");
   };
 

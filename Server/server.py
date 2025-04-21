@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel #To define and validate structured data (like JSON)
-from typing import List #To describe a list of items with type hints
+from typing import List
+from DivingManager import GroupManager, Group
+from SensorManager import SensorManager, Sensor
 
 app = FastAPI()
 
-# Allow CORS for React frontend (this is how we pass all the data to react fronend without clashing). 
+# Allow CORS for React frontend
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -14,23 +15,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-#we should move this to a class in the future 
-class Sensor(BaseModel):
-    id: str
-    bpm: int
-    distance: int
-    status: str  # "normal", "warning", "critical"
- 
-@app.get("/sensors", response_model=List[Sensor])
+# Create instances of managers
+group_manager = GroupManager()
+sensor_manager = SensorManager()
 
-#just an example to check if its working 
+# Routes for groups
+@app.get("/groups", response_model=List[Group])
+def get_groups():
+    return group_manager.get_all_groups()
+
+@app.post("/groups", response_model=Group)
+def add_group(group: Group):
+    return group_manager.add_group(group)
+
+# Routes for sensors
+@app.get("/sensors", response_model=List[Sensor])
 def get_sensors():
-    return [
-        {"id": "Lihi", "bpm": 80, "distance": 12, "status": "normal"},
-        {"id": "Noa", "bpm": 77, "distance": 14, "status": "normal"},
-        {"id": "Adva", "bpm": 160, "distance": 25, "status": "critical"},
-        {"id": "Adi", "bpm": 110, "distance": 20, "status": "warning"},
-    ]
+    return sensor_manager.get_all_sensors()
 
 @app.get("/")
 def read_root():
