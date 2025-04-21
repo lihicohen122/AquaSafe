@@ -1,6 +1,7 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom"; //in order to make paths we need this 
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import SensorDashboard from "./components/SensorDashboard";
+import Homepage from "./components/Homepage";
 import "./App.css";
 
 function App() {
@@ -8,7 +9,8 @@ function App() {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/" element={<SensorDashboard />} />
+          <Route path="/" element={<Homepage />} />
+          <Route path="/group/:groupId" element={<SensorDashboard />} />
         </Routes>
       </div>
     </Router>
