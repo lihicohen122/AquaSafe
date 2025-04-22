@@ -1,0 +1,38 @@
+.navigation-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 200px;
+  background-color: #005f99;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+}
+
+.navigation-bar ul {
+  list-style: none;
+  padding: 0;
+  width: 100%;
+}
+
+.navigation-bar li {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.navigation-bar a {
+  color: white;
+  text-decoration: none;
+  font-size: 1.2rem;
+  display: block;
+  width: 100%;
+  padding: 10px 0;
+  transition: background 0.3s;
+}
+
+.navigation-bar a:hover {
+  background-color: #004f80;
+}

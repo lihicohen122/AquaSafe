@@ -4,4 +4,11 @@
   min-height: 100vh;
   padding: 20px;
   font-family: Arial, sans-serif;
+  display: flex;
+}
+
+.content {
+  margin-left: 200px; /* Adjust to the width of the navigation bar */
+  flex: 1;
+  padding: 20px;
 }
