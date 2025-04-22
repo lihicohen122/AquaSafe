@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useNavigate } from 'react-router-dom';
+import '../styles/GlobalStyles.css';
 import "./SensorDashboard.css"; // CSS file for design 
 
 //exporting this page
 export default function SensorDashboard() {
   const [sensors, setSensors] = useState([]);
+  const navigate = useNavigate();
 
   //connecting the server to this page
   useEffect(() => {
@@ -28,7 +31,8 @@ export default function SensorDashboard() {
 
   return (
     <div className="dashboard">
-    {/* The alert box */}
+      <button className="back-button" onClick={() => navigate('/')}>Back to My Groups</button>
+      {/* The alert box */}
       <div className="alert-box">
         <h2>Alert:</h2>
         {criticalSensor ? (
