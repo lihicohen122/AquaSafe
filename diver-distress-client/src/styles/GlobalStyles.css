@@ -1,45 +1,47 @@
+/* הגדרת רקע גלובלי */
 body {
-    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #0077be, #00aaff);
+    font-family: Arial, sans-serif;
+    background: linear-gradient(to bottom, #001f3f, #003366); /* רקע תת-ימי */
     color: white;
     min-height: 100vh;
+    display: flex;
+    flex-direction: column;
 }
 
+/* מחלקה כללית לעיצוב קונטיינר */
 .container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 20px;
-    text-align: center;
+    box-sizing: border-box;
 }
 
-.card {
-    background: white;
-    color: #0077be;
-    padding: 10px 15px;
-    margin: 10px auto;
-    width: 200px;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: transform 0.2s, background 0.2s;
-}
-
-.card:hover {
-    transform: scale(1.05);
-    background: #e0f7ff;
-}
-
+/* מחלקה כללית לכפתורים */
 .button {
-    background: #005f99;
+    background-color: #004080;
     color: white;
     border: none;
     padding: 10px 20px;
     font-size: 1rem;
     border-radius: 5px;
     cursor: pointer;
-    transition: background 0.2s;
+    transition: background-color 0.3s ease;
 }
 
 .button:hover {
-    background: #004f80;
+    background-color: #0059b3;
+}
+
+/* מחלקה כללית לכרטיסים */
+.card {
+    background-color: rgba(0, 51, 102, 0.8);
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    padding: 15px;
+    color: #cce7ff;
+    text-align: center;
 }
 

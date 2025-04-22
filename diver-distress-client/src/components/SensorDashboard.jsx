@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import '../styles/GlobalStyles.css';
 import "./SensorDashboard.css"; // CSS file for design 
 
@@ -54,12 +54,12 @@ export default function SensorDashboard() {
                  {sensor.status === "critical" && "🔴"}
             </span>
             <div className="sensor-header">
-              <span>diver: {sensor.id}</span>
+              <Link to={`/diver/${sensor.id}`}>diver: {sensor.id}</Link>
             </div>
 
             <div className="sensor-info">
               <p>heartbeat: {sensor.bpm}</p>
-              <p>distance: {sensor.distance} meters</p>
+              <p>current depth: {sensor.current_depth} meters</p> {/* שימוש ב-current_depth */}
               <p>status: {sensor.status === "normal" ? "Normal" : sensor.status === "warning" ? "Warning" : "CRITICAL"}</p>
             </div>
           </div>

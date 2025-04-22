@@ -1,5 +1,5 @@
 .dashboard {
-    composes: container from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
+    composes: container from '../styles/GlobalStyles.css';
     background: linear-gradient(to bottom, #0077be, #00aaff);
     padding: 20px;
     min-height: 100vh;
@@ -31,7 +31,7 @@
     padding: 16px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    composes: card from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
+    composes: card from '../styles/GlobalStyles.css';
     color: #0077be; /* Aqua text color */
 }
 
@@ -65,22 +65,4 @@
     right: 10px;
     font-size: 20px;
     color: #0077be; /* Aqua icon color */
-}
-
-/* Added styling for the back button to match the homepage button style */
-.back-button {
-    background: #005f99;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1rem;
-    border-radius: 5px;
-    cursor: pointer;
-    transition: background 0.2s;
-    margin-bottom: 20px;
-    composes: button from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
-}
-
-.back-button:hover {
-    background: #004f80;
 }

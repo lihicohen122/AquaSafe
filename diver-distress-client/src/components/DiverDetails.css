@@ -1,0 +1,17 @@
+.diver-details {
+  background: linear-gradient(to bottom, #0077be, #00aaff);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+  margin: 20px auto;
+  text-align: left;
+}
+
+.diver-details p {
+  margin: 10px 0;
+}
+
+.back-button {
+  margin-bottom: 20px;
+}
