@@ -19,7 +19,7 @@ body {
     box-sizing: border-box;
 }
 
-/* מחלקה כללית לכפתורים */
+/* General button styling */
 .button {
     background-color: #004080;
     color: white;
@@ -28,11 +28,15 @@ body {
     font-size: 1rem;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
 }
 
 .button:hover {
     background-color: #0059b3;
+    transform: scale(1.05);
 }
 
 /* מחלקה כללית לכרטיסים */

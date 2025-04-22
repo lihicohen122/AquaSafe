@@ -31,7 +31,7 @@ export default function SensorDashboard() {
 
   return (
     <div className="dashboard">
-      <button className="back-button" onClick={() => navigate('/')}>Back to My Groups</button>
+      <button className="add-group-button" onClick={() => navigate('/')}>Back to My Groups</button>
       {/* The alert box */}
       <div className="alert-box">
         <h2>Alert:</h2>
