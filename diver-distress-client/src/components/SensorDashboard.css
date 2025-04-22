@@ -1,5 +1,5 @@
 .dashboard {
-    composes: container from '../styles/GlobalStyles.css';
+    composes: container from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
     background: linear-gradient(to bottom, #0077be, #00aaff);
     padding: 20px;
     min-height: 100vh;
@@ -31,7 +31,7 @@
     padding: 16px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    composes: card from '../styles/GlobalStyles.css';
+    composes: card from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
     color: #0077be; /* Aqua text color */
 }
 
@@ -78,6 +78,7 @@
     cursor: pointer;
     transition: background 0.2s;
     margin-bottom: 20px;
+    composes: button from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
 }
 
 .back-button:hover {

@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List
-from DivingManager import GroupManager, Group
-from SensorManager import SensorManager, Sensor
+
+from models.group import Group
+from models.sensor import Sensor
+from managers.group_manager import GroupManager
+from managers.sensor_manager import SensorManager
+
 
 app = FastAPI()
 

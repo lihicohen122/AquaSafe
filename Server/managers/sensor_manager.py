@@ -1,14 +1,6 @@
-from pydantic import BaseModel
 from typing import List
+from models.sensor import Sensor
 
-# Define a model for a sensor
-class Sensor(BaseModel):
-    id: str
-    bpm: int
-    distance: int
-    status: str  # "normal", "warning", "critical"
-
-# SensorManager class to handle sensor-related logic
 class SensorManager:
     def __init__(self):
         self.sensors = [
