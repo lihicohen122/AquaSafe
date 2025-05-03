@@ -1,4 +1,5 @@
-from sqlalchemy import Column, String, Integer, Float
+from sqlalchemy import Column, String, Integer, Float, ForeignKey
+from sqlalchemy.orm import relationship
 from database import Base
 
 class Diver(Base):
@@ -14,16 +15,5 @@ class Diver(Base):
     current_depth = Column(Float)
     status = Column(String)
 
-
-# from pydantic import BaseModel
-
-# class Diver(BaseModel):
-#     id: str
-#     name: str
-#     age: int  # גיל
-#     weight: float  # משקל בק"ג
-#     contact_info: str  # פרטי קשר
-#     bpm: int  # דופק
-#     entry_point: str  # נקודת כניסה
-#     current_depth: float  # עומק נוכחי במטרים
-#     status: str  # "normal", "warning", "critical"
+    group_id = Column(Integer, ForeignKey("groups.id"))
+    group = relationship("Group", back_populates="divers")

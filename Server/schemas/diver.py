@@ -9,6 +9,7 @@ class DiverBase(BaseModel):
     entry_point: str
     current_depth: float
     status: str
+    group_id: int  # שיוך לקבוצה
 
 class DiverCreate(DiverBase):
     id: str  # מזהה ייחודי שמסופק מה-Frontend
