@@ -6,10 +6,12 @@ from models.group import Group
 from models.sensor import Sensor
 from managers.group_manager import GroupManager
 from managers.sensor_manager import SensorManager
-from routes.diver_routes import router as diver_router  # הוספת הנתיב של diver_routes
+from routes.diver_routes import router as diver_router
 
-from fastapi import APIRouter, HTTPException
-from managers.diver_manager import DiverManager
+from database import Base, engine
+
+# יצירת הטבלאות במסד הנתונים אם הן לא קיימות
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
@@ -22,16 +24,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-
-
-router = APIRouter()
-
-# Create instances of managers
+# יוצרים מופעים של מנהלים (בינתיים רק group ו-sensor)
 group_manager = GroupManager()
-diver_manager = DiverManager()
-sensor_manager = SensorManager(diver_manager)  # העברת DiverManager ל-SensorManager
-
-
+sensor_manager = SensorManager(None)  # כרגע אין קשר לצוללנים דרך DB
 
 # Routes for groups
 @app.get("/groups", response_model=List[Group])
@@ -55,22 +50,8 @@ def read_root():
 def get_status():
     return {"status": "Server is running"}
 
-
-
-
-@router.get("/sensors")
-def get_sensors():
-    return sensor_manager.get_all_sensors()
-
-@router.get("/{diver_id}")
-def get_diver(diver_id: str):
-    diver = diver_manager.get_diver_by_id(diver_id)
-    if not diver:
-        raise HTTPException(status_code=404, detail="Diver not found")
-    return diver
-
-# Add diver routes
-app.include_router(diver_router, prefix="/divers")  # חיבור הנתיב של divers
+# חיבור הנתיב של divers
+app.include_router(diver_router, prefix="/divers")
 
 # main block to run directly with `python server.py`
 if __name__ == "__main__":

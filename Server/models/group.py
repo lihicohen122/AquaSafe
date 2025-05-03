@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List
-from models.diver import Diver
+from schemas.diver import DiverOut as Diver
 
 class Group(BaseModel):
     id: int
