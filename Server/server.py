@@ -1,13 +1,10 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from typing import List
 
-from models.group import Group
-from models.sensor import Sensor
-from managers.group_manager import GroupManager
 from managers.sensor_manager import SensorManager
+from models.sensor import Sensor
 from routes.diver_routes import router as diver_router
-
+from routes.group_routes import router as group_router
 from database import Base, engine
 
 # יצירת הטבלאות במסד הנתונים אם הן לא קיימות
@@ -24,21 +21,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# יוצרים מופעים של מנהלים (בינתיים רק group ו-sensor)
-group_manager = GroupManager()
-sensor_manager = SensorManager(None)  # כרגע אין קשר לצוללנים דרך DB
+# Routes for sensors (עדיין לא הועברו למסד, עובדים על זה)
+sensor_manager = SensorManager(None)
 
-# Routes for groups
-@app.get("/groups", response_model=List[Group])
-def get_groups():
-    return group_manager.get_all_groups()
-
-@app.post("/groups", response_model=Group)
-def add_group(group: Group):
-    return group_manager.add_group(group)
-
-# Routes for sensors
-@app.get("/sensors", response_model=List[Sensor])
+@app.get("/sensors", response_model=list[Sensor])
 def get_sensors():
     return sensor_manager.get_all_sensors()
 
@@ -50,10 +36,11 @@ def read_root():
 def get_status():
     return {"status": "Server is running"}
 
-# חיבור הנתיב של divers
+# מחברים את הנתיבים של divers ו-groups
 app.include_router(diver_router, prefix="/divers")
+app.include_router(group_router, prefix="/groups")
 
-# main block to run directly with `python server.py`
+# main block
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=5000)
