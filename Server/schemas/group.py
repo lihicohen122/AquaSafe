@@ -6,7 +6,7 @@ class GroupBase(BaseModel):
     name: str
 
 class GroupCreate(GroupBase):
-    id: int
+    pass
 
 class GroupOut(GroupBase):
     id: int

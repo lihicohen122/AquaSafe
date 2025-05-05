@@ -19,7 +19,7 @@ const Homepage = () => {
   };
 
   const handleAddGroup = () => {
-    alert("Add Group functionality to be implemented!");
+    navigate("/add-group");
   };
 
   return (
