@@ -6,6 +6,7 @@ import "./AddDiver.css";
 export default function AddDiver() {
   const { groupId } = useParams();
   const navigate = useNavigate();
+  const [error, setError] = useState(null);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -21,6 +22,8 @@ export default function AddDiver() {
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    // Clear error when user starts typing
+    if (error) setError(null);
   };
 
   const handleSubmit = async (e) => {
@@ -30,6 +33,8 @@ export default function AddDiver() {
       await axios.post("http://localhost:5000/divers", payload);
       navigate(`/group/${groupId}`);
     } catch (error) {
+      // Display the server's error message from the detail field
+      setError(error.response?.data?.detail || "An error occurred");
       console.error("Failed to add diver:", error);
     }
   };
@@ -68,6 +73,12 @@ export default function AddDiver() {
         <p className="group-info">Group {groupId}</p>
       </div>
       
+      {error && (
+        <div className="error-message">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="diver-form">
         <div className="form-grid">
           {Object.keys(formData).map((key) => (

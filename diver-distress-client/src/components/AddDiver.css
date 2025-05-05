@@ -25,6 +25,31 @@
     opacity: 0.9;
 }
 
+.error-message {
+    background-color: #ffebee;
+    color: #c62828;
+    padding: 15px;
+    border-radius: 8px;
+    margin: 10px 0;
+    border: 1px solid #ffcdd2;
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
 .diver-form {
     background: white;
     padding: 30px;
