@@ -34,31 +34,88 @@ export default function AddDiver() {
     }
   };
 
+  const getInputType = (key) => {
+    switch (key) {
+      case 'age':
+      case 'weight':
+      case 'bpm':
+      case 'current_depth':
+        return 'number';
+      default:
+        return 'text';
+    }
+  };
+
+  const getLabel = (key) => {
+    const labels = {
+      id: "ID Number",
+      name: "Full Name",
+      age: "Age",
+      weight: "Weight (kg)",
+      contact_info: "Contact Information",
+      bpm: "Heart Rate (BPM)",
+      entry_point: "Entry Point",
+      current_depth: "Current Depth (meters)",
+      status: "Status"
+    };
+    return labels[key] || key;
+  };
+
   return (
     <div className="add-diver-container">
-      <h2>Add New Diver to Group {groupId}</h2>
+      <div className="form-header">
+        <h2>Add New Diver</h2>
+        <p className="group-info">Group {groupId}</p>
+      </div>
+      
       <form onSubmit={handleSubmit} className="diver-form">
-        {Object.keys(formData).map((key) => (
-          key !== "status" ? (
-            <input
-              key={key}
-              type="text"
-              name={key}
-              placeholder={key.replace("_", " ")}
-              value={formData[key]}
-              onChange={handleChange}
-              required
-            />
-          ) : null
-        ))}
-        <select name="status" value={formData.status} onChange={handleChange}>
-          <option value="normal">Normal</option>
-          <option value="warning">Warning</option>
-          <option value="critical">Critical</option>
-        </select>
-        <button type="submit">Add Diver</button>
+        <div className="form-grid">
+          {Object.keys(formData).map((key) => (
+            key !== "status" ? (
+              <div className="form-group" key={key}>
+                <label htmlFor={key}>{getLabel(key)}</label>
+                <input
+                  id={key}
+                  type={getInputType(key)}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  required
+                  placeholder={`Enter ${getLabel(key).toLowerCase()}`}
+                />
+              </div>
+            ) : (
+              <div className="form-group" key={key}>
+                <label htmlFor={key}>{getLabel(key)}</label>
+                <select
+                  id={key}
+                  name={key}
+                  value={formData[key]}
+                  onChange={handleChange}
+                  className="status-select"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="warning">Warning</option>
+                  <option value="critical">Critical</option>
+                </select>
+              </div>
+            )
+          ))}
+        </div>
+
+        <div className="form-actions">
+          <button type="submit" className="submit-btn">
+            <span>Add Diver</span>
+          </button>
+          <button 
+            type="button" 
+            className="cancel-btn"
+            onClick={() => navigate(`/group/${groupId}`)}
+          >
+            <span>Cancel</span>
+          </button>
+        </div>
       </form>
-      <button onClick={() => navigate(`/group/${groupId}`)}>Cancel</button>
     </div>
   );
 }

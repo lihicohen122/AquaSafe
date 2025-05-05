@@ -25,10 +25,9 @@ export default function SensorDashboard() {
       .catch(error => console.error("Error fetching group with divers:", error));
   }, [groupId]);
 
-  //get the users status from server
-  //if someone is critical we will like to get his details for the alert box 
-  const criticalDiver = divers.find(s => s.status === "critical");
-  const warningDiver = divers.find(s => s.status === "warning");
+  // Get all critical and warning divers
+  const criticalDivers = divers.filter(diver => diver.status === "critical");
+  const warningDivers = divers.filter(diver => diver.status === "warning");
 
   const getStatusClass = (status) => {
     switch (status) {
@@ -44,19 +43,32 @@ export default function SensorDashboard() {
 
       {/* The alert box */}
       <div className="alert-box">
-        <h2>Alert:</h2>
-        {criticalDiver ? (
-          <div className="alert-text">
-            🔴 DIVER #{criticalDiver.id} IS IN CRITICAL STATE- BPM {criticalDiver.bpm}
-          </div>
-        ) : (
-          <p>No Current Alerts</p>
-        )}
-        {warningDiver && (
-          <div className="alert-text warning">
-            ⚠️ DIVER #{warningDiver.id} IS IN WARNING STATE - BPM {warningDiver.bpm}
-          </div>
-        )}
+        <h2>Alerts:</h2>
+        <div className="alerts-container">
+          {criticalDivers.length > 0 ? (
+            <div className="critical-alerts">
+              {criticalDivers.map(diver => (
+                <div key={diver.id} className="alert-text critical">
+                  🔴 DIVER #{diver.id} IS IN CRITICAL STATE - BPM {diver.bpm}
+                </div>
+              ))}
+            </div>
+          ) : null}
+          
+          {warningDivers.length > 0 ? (
+            <div className="warning-alerts">
+              {warningDivers.map(diver => (
+                <div key={diver.id} className="alert-text warning">
+                  ⚠️ DIVER #{diver.id} IS IN WARNING STATE - BPM {diver.bpm}
+                </div>
+              ))}
+            </div>
+          ) : null}
+          
+          {criticalDivers.length === 0 && warningDivers.length === 0 && (
+            <p>No Current Alerts</p>
+          )}
+        </div>
       </div>
 
       {/* This is the box for each diver (no matter his status) */}
