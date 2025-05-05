@@ -1,0 +1,39 @@
+.delete-diver-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    background-color: #fefefe;
+    border-radius: 8px;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+  }
+  
+  .diver-list {
+    list-style-type: none;
+    padding: 0;
+    margin-top: 20px;
+  }
+  
+  .diver-item {
+    background: #f2f2f2;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .diver-item button {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .diver-item button:hover {
+    background-color: #c82333;
+  }
+  
