@@ -7,6 +7,7 @@ from sqlalchemy.orm import Session
 from database import SessionLocal
 from managers.diver_manager import DiverManager
 
+
 # --- הגדרות פרוטוקול התקשורת ---
 
 # מילון הממפה כל תו לתדר ייחודי (ב-Hz)
