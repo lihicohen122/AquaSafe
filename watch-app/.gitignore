@@ -1,0 +1,29 @@
+# Android Studio
+.idea/
+.gradle/
+*.iml
+/local.properties
+.DS_Store
+
+# Build
+/build/
+*/build/
+
+# Logs
+*.log
+
+# OS-specific
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Keystore files (אם תשתמש בחתימה בעתיד)
+*.jks
+
+# Kotlin
+*.class
+*.kt~
+
+# Misc
+*.swp
+*.swo
