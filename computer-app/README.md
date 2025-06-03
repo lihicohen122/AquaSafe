@@ -1,6 +1,9 @@
 # AquaSafe
 
 AquaSafe is a real-time diver monitoring system, consisting of three main components:
+
+Link to our project document: https://docs.google.com/document/d/1Od5sGDTFNw2J0yXIPyZTKi4QHWAA3eVdfCY4BRlKLMU/edit?tab=t.0
+
 - **Python Server (FastAPI):** Handles data management, receives acoustic data from the watch, and provides an API for the management app.
 - **Watch App (Android/Kotlin):** Collects heart rate data from a smartwatch and transmits it acoustically to the server.
 - **Desktop App (React):** Management interface for viewing diver status, groups, and alerts.
