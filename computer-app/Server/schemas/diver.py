@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 
 class DiverBase(BaseModel):
+    id: str
     name: str
     age: int
     weight: float
@@ -9,14 +10,18 @@ class DiverBase(BaseModel):
     entry_point: str
     current_depth: float
     status: str
-    group_id: int  # שיוך לקבוצה
 
 class DiverCreate(DiverBase):
-    id: str  # מזהה ייחודי שמסופק מה-Frontend
+    pass
 
 class DiverOut(DiverBase):
-    id: str
+    group_id: int | None = None
 
-    model_config = {
-    "from_attributes": True
-    }
+    class Config:
+        from_attributes = True  # New pydantic v2 attribute instead of orm_mode
+
+class Diver(DiverBase):
+    group_id: int | None = None
+
+    class Config:
+        from_attributes = True  # Updated to new pydantic v2 attribute

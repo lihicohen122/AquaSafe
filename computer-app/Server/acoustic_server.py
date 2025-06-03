@@ -5,11 +5,13 @@ import time
 from sqlalchemy.orm import Session
 from database import SessionLocal
 from managers.diver_manager import DiverManager
+from models.diver import Diver as DiverModel
+from models.group import Group
 
 
 # --- Acoustic Communication Protocol Settings ---
 
-# NEW ACOUSTIC PROTOCOL FREQUENCIES (V4) - No collisions, focused range
+# NEW ACOUSTIC PROTOCOL FREQUENCIES (V4) - Matching Watch App Exactly
 CHAR_TO_FREQ = {
     '0': 3000, '1': 3200, '2': 3400, '3': 3600, '4': 3800,
     '5': 4000, '6': 4200, '7': 4400, '8': 4600, '9': 4800,
@@ -18,21 +20,31 @@ CHAR_TO_FREQ = {
     'k': 7000, 'l': 7200, 'm': 7400, 'n': 7600, 'o': 7800,
     'p': 8000, 'q': 8200, 'r': 8400, 's': 8600, 't': 8800,
     'u': 9000, 'v': 9200, 'w': 9400, 'x': 9600, 'y': 9800,
-    'z': 10000,  '-': 2200, ',': 2000 
+    'z': 10000, '-': 2200, ',': 2000  # Added back comma and hyphen frequencies
 }
 FREQ_TO_CHAR = {v: k for k, v in CHAR_TO_FREQ.items()}
 
 RATE = 44100
-BUFFER_CHUNK_SIZE = 1024 # Smaller chunks for continuous listening
+BUFFER_CHUNK_SIZE = 1024  # Smaller chunks for continuous listening
 
-START_FREQ = 1200
-END_FREQ = 11000 
+START_FREQ = 1200  # Match watch app's start frequency
+END_FREQ = 11000  # Match watch app's end frequency
 
-# Amplitude thresholds
-CHAR_THRESHOLD = 1e4 # Min amplitude for character detection (10,000)
-START_END_THRESHOLD = 5e3 # Min amplitude for start/end signal detection (5,000)
+# Timing parameters - Adjusted for better reliability
+FFT_WINDOW_SIZE = int(0.3 * RATE)  # Match watch app's chunk duration (0.3 seconds)
+MAX_SILENT_TIME = 15.0  # Increased to 15 seconds to be more forgiving
+DIGIT_WAIT_TIME = 1.0  # Time to wait for additional digits after receiving a valid but potentially incomplete BPM
 
-AMPLITUDE_SENSITIVITY_THRESHOLD = 500 # Overall amplitude to trigger processing a chunk
+# Amplitude thresholds - Adjusted for better detection
+CHAR_THRESHOLD = 1e3  # Lowered threshold for character detection
+START_END_THRESHOLD = 2e3  # Threshold for start/end signals
+END_FREQ_TOLERANCE = 500  # Wider tolerance for end frequency detection
+
+AMPLITUDE_SENSITIVITY_THRESHOLD = 200  # Reduced to detect quieter signals
+
+# Message validation
+MIN_MESSAGE_LENGTH = 4  # Minimum length for a valid message (e.g., "a,99")
+MAX_MESSAGE_LENGTH = 10  # Maximum length for a valid message (e.g., "abcdef,123")
 
 class AcousticServer:
     def __init__(self):
@@ -60,7 +72,7 @@ class AcousticServer:
         self.is_recording = False # Flag to indicate if a message is currently being recorded
         self.message_buffer = [] # Stores detected characters for the current message
         self.last_char_time = time.time() # Timestamp of the last detected character
-        self.max_silent_time = 5.0 # Max time (in seconds) allowed between characters before resetting recording
+        self.max_silent_time = MAX_SILENT_TIME # Use the global constant for consistency
 
     def _find_dominant_freq(self, data, min_freq, max_freq, apply_threshold=True):
         """
@@ -117,8 +129,8 @@ class AcousticServer:
         # Find the defined protocol frequency closest to the detected frequency
         closest_defined_freq = min(FREQ_TO_CHAR.keys(), key=lambda k: abs(k - freq))
         
-        # If the detected frequency is too far from any defined protocol frequency, ignore it
-        if abs(closest_defined_freq - freq) > 100: # Tolerance of +/- 100 Hz
+        # Increased tolerance for frequency matching
+        if abs(closest_defined_freq - freq) > 200:  # Increased from 100 to 200 Hz tolerance
             return None
         
         return FREQ_TO_CHAR[closest_defined_freq]
@@ -126,30 +138,65 @@ class AcousticServer:
     def process_message(self, message):
         """
         Processes the fully decoded message, attempts to parse ID and BPM,
-        and saves to the database.
+        and updates the diver's data in the database.
         
         Args:
-            message (str): The decoded string message (e.g., "li,84").
+            message (str): The decoded string message (e.g., "li95" or "li,95").
         """
-        print(f"--- Decoded Full Message: '{message}' ---")
-        try:
-            parts = message.split(',')
-            if len(parts) == 2:
-                diver_id = parts[0]
-                bpm_str = parts[1]
+        print(f"\n=== Processing Message: '{message}' ===")
 
-                if bpm_str.isdigit():
-                    bpm = int(bpm_str)
-                    print(f"Decoded: Diver ID = {diver_id}, BPM = {bpm}")
-                    # Call the DiverManager to save data to the database
-                    #self.diver_manager.create_diver_data(diver_id=diver_id, bpm=bpm)
-                    #print("Message successfully saved to database.")
+        try:
+            # Find where numbers start
+            number_start = -1
+            for i, char in enumerate(message):
+                if char.isdigit():
+                    number_start = i
+                    break
+            
+            if number_start == -1:
+                print("❌ ERROR: No BPM found in message")
+                return False
+                
+            # Split into ID and BPM
+            diver_id = message[:number_start].replace(',', '')  # Remove any comma
+            bpm_str = message[number_start:].replace(',', '')  # Remove any comma
+
+            if bpm_str.isdigit():
+                bpm = int(bpm_str)
+                print(f"Parsed: Diver ID = {diver_id}, BPM = {bpm}")
+                
+                # Get the diver from database
+                diver = self.db_session.query(DiverModel).filter(DiverModel.id == diver_id).first()
+                if diver:
+                    # Update BPM and status
+                    old_bpm = diver.bpm
+                    old_status = diver.status
+                    
+                    diver.bpm = bpm
+                    if bpm > 150:
+                        diver.status = "critical"
+                    elif bpm > 120:
+                        diver.status = "warning"
+                    else:
+                        diver.status = "normal"
+                    
+                    # Save changes
+                    self.db_session.commit()
+                    print(f"\nDiver {diver_id} updated:")
+                    print(f"  BPM: {old_bpm} -> {bpm}")
+                    print(f"  Status: {old_status} -> {diver.status}")
+                    if diver.status != "normal":
+                        print(f"\n⚠️ ALERT: Diver {diver_id} status is {diver.status.upper()}")
+                    return True
                 else:
-                    print(f"ERROR: Invalid BPM format in message: '{message}'")
+                    print(f"❌ ERROR: Diver {diver_id} not found in database")
             else:
-                print(f"ERROR: Malformed message received: '{message}' (Expected 'ID,BPM')")
+                print(f"❌ ERROR: Invalid BPM format: '{bpm_str}'")
         except Exception as e:
-            print(f"ERROR processing message '{message}': {e}")
+            print(f"❌ ERROR processing message: {e}")
+            self.db_session.rollback()
+        print("=" * 40)
+        return False
 
     def listen(self):
         """
@@ -158,9 +205,6 @@ class AcousticServer:
         """
         print("Acoustic server is listening... Press Ctrl+C to stop.")
         
-        # FFT window size should match the watch's tone duration for optimal frequency resolution
-        FFT_WINDOW_SIZE = int(0.3 * RATE) 
-
         audio_buffer = np.array([], dtype=np.int16) # Buffer to accumulate audio data for FFT
         
         try:
@@ -188,11 +232,20 @@ class AcousticServer:
                              self._process_audio_buffer(audio_buffer)
                         audio_buffer = np.array([], dtype=np.int16) # Reset buffer
 
-                    # If recording is active and silence persists for too long, reset the message
+                    # If recording is active and silence persists for too long
                     if self.is_recording and (time.time() - self.last_char_time) > self.max_silent_time:
-                        print("Timeout during recording. Resetting message buffer.")
-                        self.is_recording = False
-                        self.message_buffer = []
+                        current_message = "".join(self.message_buffer)
+                        # Only reset if we don't have a valid message format
+                        if not self._is_valid_message(current_message):
+                            print("Timeout during recording. No valid message received.")
+                            self.is_recording = False
+                            self.message_buffer = []
+                        else:
+                            # If we have a valid message, process it
+                            print(f"Message complete: '{current_message}'")
+                            self.process_message(current_message)
+                            self.message_buffer = []
+                            self.is_recording = False
 
         except KeyboardInterrupt:
             print("\nStopping server.")
@@ -214,42 +267,38 @@ class AcousticServer:
         if len(buffer_data) == 0:
             return
 
-        FFT_WINDOW_SIZE = int(0.3 * RATE)
-        
-        # Pad the data if it's shorter than the FFT window size for consistent FFT results
+        # Use the configured FFT window size that matches the watch's chunk duration
         if len(buffer_data) < FFT_WINDOW_SIZE:
             padded_data = np.pad(buffer_data, (0, FFT_WINDOW_SIZE - len(buffer_data)), 'constant')
             audio_for_fft = padded_data
         else:
-            audio_for_fft = buffer_data[-FFT_WINDOW_SIZE:] # Use the most recent part of the buffer
+            audio_for_fft = buffer_data[-FFT_WINDOW_SIZE:]  # Use the most recent part of the buffer
 
         # Detect Start Frequency
         start_freq_detected, start_amp = self._find_dominant_freq(audio_for_fft, 
-                                                                   START_FREQ - 50, START_FREQ + 50, 
-                                                                   apply_threshold=False) # No amplitude threshold for raw detection
+                                                                START_FREQ - 200, START_FREQ + 200, 
+                                                                apply_threshold=False)
 
         # Detect End Frequency
         end_freq_detected, end_amp = self._find_dominant_freq(audio_for_fft, 
-                                                               END_FREQ - 50, END_FREQ + 50, 
-                                                               apply_threshold=False) # No amplitude threshold for raw detection
+                                                            END_FREQ - END_FREQ_TOLERANCE, 
+                                                            END_FREQ + END_FREQ_TOLERANCE, 
+                                                            apply_threshold=False)
 
-        # Detect Character Frequencies (temporarily apply_threshold=False for debugging,
-        # but the check `char_amp > CHAR_THRESHOLD` below still applies for adding to buffer)
+        # Detect character frequencies (including comma)
         char_freq_detected, char_amp = self._find_dominant_freq(audio_for_fft, 
-                                                                1900, 10100, 
-                                                                apply_threshold=False) 
+                                                              1900, 10100,  # Range for all characters including comma
+                                                              apply_threshold=False)
 
-        # --- Debug prints (uncomment if you need more detailed insight) ---
-        # if start_freq_detected is not None and start_amp > 1000:
-        #     print(f"DEBUG: Potential Start Freq: {start_freq_detected:.0f} Hz, Amp: {start_amp:.0f}")
-        # if end_freq_detected is not None and end_amp > 1000:
-        #     print(f"DEBUG: Potential End Freq: {end_freq_detected:.0f} Hz, Amp: {end_amp:.0f}")
-        # if char_freq_detected is not None:
-        #     if char_amp > 500 and not (START_FREQ - 50 <= char_freq_detected <= START_FREQ + 50) and \
-        #                           not (END_FREQ - 50 <= char_freq_detected <= END_FREQ + 50):
-        #         print(f"DEBUG: Potential Char Freq: {char_freq_detected:.0f} Hz, Amp: {char_amp:.0f}")
-        # -------------------------------------------------------------------
-
+        # Debug logging
+        if start_freq_detected is not None and start_amp > START_END_THRESHOLD:
+            print(f"DEBUG: Start signal frequency: {start_freq_detected:.0f} Hz, Amplitude: {start_amp:.0f}")
+        if end_freq_detected is not None and end_amp > START_END_THRESHOLD:
+            print(f"DEBUG: End signal frequency: {end_freq_detected:.0f} Hz, Amplitude: {end_amp:.0f}")
+        if char_freq_detected is not None and char_amp > CHAR_THRESHOLD:
+            char = self._get_closest_char(char_freq_detected)
+            freq_type = "Comma" if char == ',' else "Character"
+            print(f"DEBUG: {freq_type} frequency: {char_freq_detected:.0f} Hz, Amplitude: {char_amp:.0f}")
 
         if not self.is_recording:
             # If not recording, check for a start signal
@@ -257,27 +306,108 @@ class AcousticServer:
                 self.is_recording = True
                 self.message_buffer = [] # Clear buffer for new message
                 self.last_char_time = time.time()
+                if hasattr(self, '_valid_bpm_time'):
+                    delattr(self, '_valid_bpm_time')  # Reset BPM timer on new message
                 print(f"\n>>> Start sequence detected. Start Amp: {start_amp:.0f}. Recording message...")
         else: # self.is_recording is True
             # If recording, check for an end signal
             if end_freq_detected is not None and end_amp > START_END_THRESHOLD:
-                self.is_recording = False
                 print(f"<<< End sequence detected. End Amp: {end_amp:.0f}. Processing message...")
-                full_message = "".join(self.message_buffer)
-                self.process_message(full_message) # Process the complete message
-                self.message_buffer = [] # Reset buffer after processing
-            # If not an end signal, check for a character tone
-            elif char_freq_detected is not None and char_amp > CHAR_THRESHOLD: # Only add if amplitude is high enough
+                current_message = "".join(self.message_buffer)
+                
+                # Only stop recording if we successfully process a valid message
+                if self._is_valid_message(current_message):
+                    self.process_message(current_message)
+                    self.message_buffer = []
+                    self.is_recording = False
+                    if hasattr(self, '_valid_bpm_time'):
+                        delattr(self, '_valid_bpm_time')  # Reset BPM timer
+                    print("\nReady for next message...")
+                else:
+                    # If invalid message, keep recording
+                    print(f"Message not complete yet: '{current_message}', continuing to record...")
+                return
+            
+            # Check for characters (including comma)
+            if char_freq_detected is not None and char_amp > CHAR_THRESHOLD:
                 char = self._get_closest_char(char_freq_detected)
                 if char is not None:
-                    # Debounce: Add character only if it's different from the last one,
-                    # or if enough time has passed (to avoid duplicate detections from a single long tone)
                     if not self.message_buffer or \
                        self.message_buffer[-1] != char or \
-                       (time.time() - self.last_char_time) > 0.4: 
+                       (time.time() - self.last_char_time) > 0.4:
+                        # Auto-insert comma when transitioning from letters to numbers if no comma exists
+                        current_message = "".join(self.message_buffer)
+                        if char.isdigit() and ',' not in current_message and \
+                           (len(self.message_buffer) > 0 and self.message_buffer[-1].isalpha()):
+                            self.message_buffer.append(',')
+                            print("Auto-inserted comma before number")
+                            
                         self.message_buffer.append(char)
+                        current_message = "".join(self.message_buffer)
+                        print(f"Current buffer: '{current_message}'")
                         print(f"Character detected: '{char}' (freq: {char_freq_detected:.0f} Hz) (Amp: {char_amp:.0f})")
-                    self.last_char_time = time.time() # Update timestamp of last detected char
+                        
+                        # Check message format and BPM
+                        if ',' in current_message:
+                            parts = current_message.split(',')
+                            if len(parts) == 2 and parts[1].isdigit():
+                                bpm = int(parts[1])
+                                if bpm < 40:
+                                    print("Waiting for more BPM digits...")
+                                elif bpm <= 200:
+                                    print(f"Valid BPM ({bpm}), waiting briefly for potential additional digits...")
+                                else:
+                                    print(f"BPM too high ({bpm}), waiting for correction...")
+                        
+                        # Only process if we have waited long enough for a complete message
+                        if self._is_valid_message(current_message):
+                            print(f"Valid message format detected: '{current_message}'")
+                            self.process_message(current_message)
+                            self.message_buffer = []
+                            self.is_recording = False
+                            if hasattr(self, '_valid_bpm_time'):
+                                delattr(self, '_valid_bpm_time')  # Reset BPM timer
+                            print("\nReady for next message...")
+                            return
+                    self.last_char_time = time.time()
+
+    def _is_valid_message(self, message):
+        """Helper function to check if a message is valid (has ID and BPM)"""
+        if ',' not in message:
+            return False
+        parts = message.split(',')
+        # Check if we have exactly one comma and both parts are non-empty
+        if len(parts) != 2 or not parts[0] or not parts[1]:
+            return False
+        # Check if the first part has at least one character
+        if len(parts[0]) == 0:
+            return False
+        # Check if second part is all digits and within valid BPM range
+        if not parts[1].isdigit():
+            return False
+        bpm = int(parts[1])
+        # If BPM is too high, invalid
+        if bpm > 200:
+            return False
+        # If BPM is valid (40-200), mark as potentially complete
+        if bpm >= 40:
+            # Store the time we first saw a valid BPM
+            if not hasattr(self, '_valid_bpm_time'):
+                self._valid_bpm_time = time.time()
+            # If we've waited long enough for more digits, consider it complete
+            if time.time() - self._valid_bpm_time >= DIGIT_WAIT_TIME:
+                delattr(self, '_valid_bpm_time')  # Reset the timer
+                return True
+            return False  # Keep waiting for potential more digits
+        # If BPM is too low, keep waiting
+        return False
+
+    def _format_message(self, message):
+        """Format message by inserting comma between ID and BPM"""
+        for i, char in enumerate(message):
+            if char.isdigit():
+                return message[:i] + ',' + message[i:]
+        return message
 
 
 if __name__ == "__main__":
