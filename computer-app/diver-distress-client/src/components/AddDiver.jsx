@@ -19,12 +19,33 @@ export default function AddDiver() {
     status: "normal"
   });
 
+  const [error, setError] = useState("");
+
+  const validateId = (id) => {
+    return /^[a-zA-Z]+$/.test(id);
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    
+    if (name === "id") {
+      if (value === "" || validateId(value)) {
+        setFormData({ ...formData, [name]: value });
+        setError("");
+      } else {
+        setError("ID must contain only letters");
+      }
+    } else {
+      setFormData({ ...formData, [name]: value });
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!validateId(formData.id)) {
+      setError("ID must contain only letters");
+      return;
+    }
     try {
       const payload = { ...formData, group_id: parseInt(groupId) };
       await axios.post("http://localhost:5000/divers", payload);
@@ -37,6 +58,7 @@ export default function AddDiver() {
   return (
     <div className="add-diver-container">
       <h2>Add New Diver to Group {groupId}</h2>
+      {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit} className="diver-form">
         {Object.keys(formData).map((key) => (
           key !== "status" ? (
