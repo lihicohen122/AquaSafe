@@ -13,8 +13,24 @@ def get_diver(diver_id: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Diver not found")
     return diver
 
+# This endpoint is used by the acoustic server - DO NOT MODIFY
 @router.post("/", response_model=DiverOut)
 def create_diver(diver: DiverCreate, db: Session = Depends(get_db)):
+    new_diver = DiverModel(**diver.dict())
+    db.add(new_diver)
+    db.commit()
+    db.refresh(new_diver)
+    return new_diver
+
+# New endpoint specifically for web form submissions
+@router.post("/web", response_model=DiverOut)
+def create_diver_web(diver: DiverCreate, db: Session = Depends(get_db)):
+    # Check if diver with this ID already exists
+    existing_diver = db.query(DiverModel).filter(DiverModel.id == diver.id).first()
+    if existing_diver:
+        raise HTTPException(status_code=400, detail=f"Diver with ID '{diver.id}' already exists")
+    
+    # Create new diver with group_id
     new_diver = DiverModel(**diver.dict())
     db.add(new_diver)
     db.commit()
