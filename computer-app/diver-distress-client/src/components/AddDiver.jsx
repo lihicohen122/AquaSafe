@@ -40,18 +40,61 @@ export default function AddDiver() {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const validateForm = () => {
     if (!validateId(formData.id)) {
       setError("ID must contain only letters");
+      return false;
+    }
+    
+    // Validate numeric fields
+    if (isNaN(formData.age) || formData.age === "") {
+      setError("Age must be a valid number");
+      return false;
+    }
+    
+    if (isNaN(formData.weight) || formData.weight === "") {
+      setError("Weight must be a valid number");
+      return false;
+    }
+    
+    if (isNaN(formData.bpm) || formData.bpm === "") {
+      setError("BPM must be a valid number");
+      return false;
+    }
+    
+    if (isNaN(formData.current_depth) || formData.current_depth === "") {
+      setError("Current depth must be a valid number");
+      return false;
+    }
+    
+    return true;
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!validateForm()) {
       return;
     }
+
     try {
-      const payload = { ...formData, group_id: parseInt(groupId) };
-      await axios.post("http://localhost:5000/divers", payload);
+      const payload = {
+        ...formData,
+        age: parseInt(formData.age),
+        weight: parseFloat(formData.weight),
+        bpm: parseInt(formData.bpm),
+        current_depth: parseFloat(formData.current_depth),
+        group_id: parseInt(groupId)
+      };
+      
+      await axios.post("http://localhost:5000/divers/web", payload);
       navigate(`/group/${groupId}`);
     } catch (error) {
       console.error("Failed to add diver:", error);
+      if (error.response) {
+        setError(error.response.data.detail || "Failed to add diver. Please check your input.");
+      } else {
+        setError("Failed to connect to server");
+      }
     }
   };
 
@@ -60,19 +103,28 @@ export default function AddDiver() {
       <h2>Add New Diver to Group {groupId}</h2>
       {error && <div className="error-message">{error}</div>}
       <form onSubmit={handleSubmit} className="diver-form">
-        {Object.keys(formData).map((key) => (
-          key !== "status" ? (
-            <input
-              key={key}
-              type="text"
-              name={key}
-              placeholder={key.replace("_", " ")}
-              value={formData[key]}
-              onChange={handleChange}
-              required
-            />
-          ) : null
-        ))}
+        {Object.keys(formData).map((key) => {
+          if (key === "status") return null;
+          
+          let inputProps = {
+            type: "text",
+            key,
+            name: key,
+            placeholder: key.replace("_", " "),
+            value: formData[key],
+            onChange: handleChange,
+            required: true
+          };
+
+          if (["age", "bpm"].includes(key)) {
+            inputProps.type = "number";
+          } else if (["weight", "current_depth"].includes(key)) {
+            inputProps.type = "number";
+            inputProps.step = "0.01";
+          }
+          
+          return <input {...inputProps} />;
+        })}
         <select name="status" value={formData.status} onChange={handleChange}>
           <option value="normal">Normal</option>
           <option value="warning">Warning</option>
