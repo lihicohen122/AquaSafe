@@ -1,0 +1,50 @@
+.help-container {
+  max-width: 500px;
+  margin: 40px auto;
+  padding: 24px;
+  background: #f3f7fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.help-container h2 {
+  color: #003366;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+.help-form input,
+.help-form textarea {
+  width: 100%;
+  padding: 10px;
+  margin: 10px 0;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  font-size: 16px;
+  box-sizing: border-box;
+  padding-right: 16px;
+}
+
+.help-form button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+.help-form button:hover {
+  background-color: #0056b3;
+}
+
+.success-message {
+  color: #003366;
+  font-weight: bold;
+  background: #e0f7fa;
+  border-radius: 5px;
+  padding: 16px;
+  margin-top: 20px;
+}

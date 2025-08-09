@@ -6,6 +6,8 @@ import DiverDetails from "./components/DiverDetails";
 import NavigationBar from "./components/NavigationBar";
 import AddDiver from "./components/AddDiver";
 import DeleteDiver from "./components/DeleteDiver";
+import Help from "./components/Help";
+import About from "./components/About";
 import "./App.css";
 
 function App() {
@@ -20,6 +22,8 @@ function App() {
             <Route path="/diver/:diverId" element={<DiverDetails />} />
             <Route path="/add-diver/:groupId" element={<AddDiver />} />
             <Route path="/delete-diver/:groupId" element={<DeleteDiver />} />
+            <Route path="/help" element={<Help />} />
+            <Route path="/about" element={<About />} />
           </Routes>
         </div>
       </div>

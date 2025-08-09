@@ -1,10 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import BackgroundTasks
+import smtplib
+from email.mime.text import MIMEText
 
 from managers.sensor_manager import SensorManager
 from models.sensor import Sensor
 from routes.diver_routes import router as diver_router
 from routes.group_routes import router as group_router
+from routes.contact_routes import router as contact_router
 from database import Base, engine
 
 # יצירת הטבלאות במסד הנתונים אם הן לא קיימות
@@ -39,6 +43,7 @@ def get_status():
 # מחברים את הנתיבים של divers ו-groups
 app.include_router(diver_router, prefix="/divers")
 app.include_router(group_router, prefix="/groups")
+app.include_router(contact_router)
 
 # main block
 if __name__ == "__main__":

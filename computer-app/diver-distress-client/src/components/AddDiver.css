@@ -17,6 +17,9 @@
     border-radius: 5px;
     border: 1px solid #ccc;
     font-size: 16px;
+    box-sizing: border-box;
+    /* מרווח פנימי מימין כדי שהטקסט לא יגיע לקצה */
+    padding-right: 16px;
   }
   
   .diver-form button {
