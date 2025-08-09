@@ -12,7 +12,7 @@ class DiverBase(BaseModel):
     status: str
 
 class DiverCreate(DiverBase):
-    pass
+    group_id: int | None = None
 
 class DiverOut(DiverBase):
     group_id: int | None = None

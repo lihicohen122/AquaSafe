@@ -31,7 +31,18 @@ def create_diver_web(diver: DiverCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail=f"Diver with ID '{diver.id}' already exists")
     
     # Create new diver with group_id
-    new_diver = DiverModel(**diver.dict())
+    new_diver = DiverModel(
+        id=diver.id,
+        name=diver.name,
+        age=diver.age,
+        weight=diver.weight,
+        contact_info=diver.contact_info,
+        bpm=diver.bpm,
+        entry_point=diver.entry_point,
+        current_depth=diver.current_depth,
+        status=diver.status,
+        group_id=diver.group_id
+    )
     db.add(new_diver)
     db.commit()
     db.refresh(new_diver)
