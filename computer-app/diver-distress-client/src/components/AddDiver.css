@@ -35,5 +35,9 @@
   
   button {
     margin-top: 10px;
-  } 
-  
+  }
+
+  .add-diver-container h2 {
+    color: #003366;
+    font-weight: bold;
+  }

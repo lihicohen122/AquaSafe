@@ -8,6 +8,11 @@
     text-align: center;
   }
   
+  .delete-diver-container h2 {
+    color: #003366;
+    font-weight: bold;
+}
+
   .diver-list {
     list-style-type: none;
     padding: 0;
@@ -24,6 +29,11 @@
     align-items: center;
   }
   
+  .diver-item span {
+    color: #222e50;
+    font-weight: 500;
+}
+
   .diver-item button {
     background-color: #dc3545;
     color: white;
@@ -36,4 +46,3 @@
   .diver-item button:hover {
     background-color: #c82333;
   }
-  
