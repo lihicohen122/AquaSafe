@@ -11,7 +11,6 @@ from models.group import Group
 
 # --- Acoustic Communication Protocol Settings ---
 
-# NEW ACOUSTIC PROTOCOL FREQUENCIES (V4) - Matching Watch App Exactly
 CHAR_TO_FREQ = {
     '0': 3000, '1': 3200, '2': 3400, '3': 3600, '4': 3800,
     '5': 4000, '6': 4200, '7': 4400, '8': 4600, '9': 4800,
@@ -20,7 +19,7 @@ CHAR_TO_FREQ = {
     'k': 7000, 'l': 7200, 'm': 7400, 'n': 7600, 'o': 7800,
     'p': 8000, 'q': 8200, 'r': 8400, 's': 8600, 't': 8800,
     'u': 9000, 'v': 9200, 'w': 9400, 'x': 9600, 'y': 9800,
-    'z': 10000, '-': 2200, ',': 2000  # Added back comma and hyphen frequencies
+    'z': 10000, '-': 2200, ',': 2000 
 }
 FREQ_TO_CHAR = {v: k for k, v in CHAR_TO_FREQ.items()}
 
@@ -30,17 +29,16 @@ BUFFER_CHUNK_SIZE = 1024  # Smaller chunks for continuous listening
 START_FREQ = 1200  # Match watch app's start frequency
 END_FREQ = 11000  # Match watch app's end frequency
 
-# Timing parameters - Adjusted for better reliability
+# Timing parameters
 FFT_WINDOW_SIZE = int(0.3 * RATE)  # Match watch app's chunk duration (0.3 seconds)
-MAX_SILENT_TIME = 15.0  # Increased to 15 seconds to be more forgiving
+MAX_SILENT_TIME = 15.0  
 DIGIT_WAIT_TIME = 1.0  # Time to wait for additional digits after receiving a valid but potentially incomplete BPM
 
-# Amplitude thresholds - Adjusted for better detection
-CHAR_THRESHOLD = 1e3  # Lowered threshold for character detection
+# Signal strength thresholds
+CHAR_THRESHOLD = 1e3  # Threshold for character detection
 START_END_THRESHOLD = 2e3  # Threshold for start/end signals
-END_FREQ_TOLERANCE = 500  # Wider tolerance for end frequency detection
-
-AMPLITUDE_SENSITIVITY_THRESHOLD = 200  # Reduced to detect quieter signals
+END_FREQ_TOLERANCE = 500  # Tolerance for end frequency detection
+SIGNAL_STRENGTH_SENSITIVITY_THRESHOLD = 200  
 
 # Message validation
 MIN_MESSAGE_LENGTH = 4  # Minimum length for a valid message (e.g., "a,99")
@@ -50,14 +48,12 @@ class AcousticServer:
     def __init__(self):
         self.p = pyaudio.PyAudio()
         # Open the audio stream for input (microphone)
-        # input_device_index=1 is a common default, but verify for your system.
-        # You can uncomment the device listing loop below to find your microphone's index.
         self.stream = self.p.open(format=pyaudio.paInt16,
                                   channels=1,
                                   rate=RATE,
                                   input=True,
                                   frames_per_buffer=BUFFER_CHUNK_SIZE,
-                                  input_device_index=1) 
+                                  input_device_index=2) 
         
         # --- Uncomment to list audio devices and find your microphone's index ---
         # info = self.p.get_host_api_info_by_index(0)
@@ -217,7 +213,7 @@ class AcousticServer:
                 max_amp_in_chunk = np.max(np.abs(audio_chunk))
                 
                 # If significant sound is detected, add it to the audio buffer
-                if max_amp_in_chunk > AMPLITUDE_SENSITIVITY_THRESHOLD:
+                if max_amp_in_chunk > SIGNAL_STRENGTH_SENSITIVITY_THRESHOLD:
                     audio_buffer = np.concatenate((audio_buffer, audio_chunk))
                     
                     # If enough data is accumulated for an FFT window, process it

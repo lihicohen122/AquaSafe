@@ -77,7 +77,7 @@ export default function AddDiver() {
     }
 
     try {
-      const payload = {
+      const diverInfo = {
         ...formData,
         age: parseInt(formData.age),
         weight: parseFloat(formData.weight),
@@ -86,7 +86,7 @@ export default function AddDiver() {
         group_id: parseInt(groupId)
       };
       
-      await axios.post("http://localhost:5000/divers/web", payload);
+      await axios.post("http://localhost:5000/divers/web", diverInfo);
       navigate(`/group/${groupId}`);
     } catch (error) {
       console.error("Failed to add diver:", error);

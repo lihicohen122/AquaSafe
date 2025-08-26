@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import '../styles/GlobalStyles.css';
 import "./Homepage.css";
+import AddGroup from "./AddGroup";
 
 const Homepage = () => {
   const navigate = useNavigate();
@@ -18,8 +19,19 @@ const Homepage = () => {
     navigate(`/group/${groupId}`);
   };
 
+  const [showAddGroup, setShowAddGroup] = useState(false);
+
   const handleAddGroup = () => {
-    alert("Add Group functionality to be implemented!");
+    setShowAddGroup(true);
+  };
+
+  const handleGroupAdded = (newGroup) => {
+    setGroups(prev => [...prev, newGroup]);
+    setShowAddGroup(false);
+  };
+
+  const handleCancelAddGroup = () => {
+    setShowAddGroup(false);
   };
 
   return (
@@ -44,6 +56,9 @@ const Homepage = () => {
         <button className="add-group-button" onClick={handleAddGroup}>
           + Add Group
         </button>
+        {showAddGroup && (
+          <AddGroup onGroupAdded={handleGroupAdded} onCancel={handleCancelAddGroup} />
+        )}
       </main>
     </div>
   );

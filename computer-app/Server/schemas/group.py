@@ -6,7 +6,11 @@ class GroupBase(BaseModel):
     name: str
 
 class GroupCreate(GroupBase):
-    id: int
+    """
+    Schema for creating a new group. Only the name is required.
+    The id is generated automatically by the database.
+    """
+    pass
 
 class GroupOut(GroupBase):
     id: int

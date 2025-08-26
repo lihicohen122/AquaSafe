@@ -1,0 +1,42 @@
+.add-group-container {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 400px;
+  margin: 40px auto;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  text-align: center;
+}
+.add-group-container h2 {
+  color: #003366;
+  margin-bottom: 24px;
+}
+.group-form input {
+  width: 90%;
+  padding: 10px;
+  margin-bottom: 16px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+.group-form button {
+  background: #1976d2;
+  color: #fff;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  margin: 8px;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.2s;
+}
+.group-form button[type="button"] {
+  background: #aaa;
+}
+.group-form button:hover {
+  background: #1565c0;
+}
+.error-message {
+  color: #d32f2f;
+  margin-bottom: 12px;
+}
