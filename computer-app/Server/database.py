@@ -2,16 +2,16 @@ from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-# הגדרת הנתיב לקובץ SQLite (אפשר לשנות את שם הקובץ אם תרצו)
+# SQLite database file path (you can change the filename if needed)
 SQLALCHEMY_DATABASE_URL = "sqlite:///./divers.db"
 
-# יוצרים את engine
+# Create engine
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
 )
 
-# יצירת session
+# Create session
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
-# בסיס משותף לכל המודלים
+# Shared base for all models
 Base = declarative_base()

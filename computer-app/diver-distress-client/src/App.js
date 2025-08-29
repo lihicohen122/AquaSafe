@@ -1,13 +1,13 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import SensorDashboard from "./components/SensorDashboard";
-import Homepage from "./components/Homepage";
-import DiverDetails from "./components/DiverDetails";
-import NavigationBar from "./components/NavigationBar";
-import AddDiver from "./components/AddDiver";
-import DeleteDiver from "./components/DeleteDiver";
-import Help from "./components/Help";
-import About from "./components/About";
+import SensorDashboard from "./components/pages/Homepage/Groups/Dashboard/SensorDashboard";
+import Homepage from "./components/pages/Homepage/Homepage";
+import DiverDetails from "./components/pages/Homepage/Groups/Dashboard/Divers/DiverDetails";
+import NavigationBar from "./components/layout/NavigationBar";
+import AddDiver from "./components/pages/Homepage/Groups/Dashboard/Divers/AddDiver";
+import DeleteDiver from "./components/pages/Homepage/Groups/Dashboard/Divers/DeleteDiver";
+import Help from "./components/pages/Help/Help";
+import About from "./components/pages/About/About";
 import "./App.css";
 
 function App() {

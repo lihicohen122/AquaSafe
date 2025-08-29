@@ -47,7 +47,7 @@
     justify-content: flex-start;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #005f99; /* Darker aqua for headers */
+    color: #005f99;
 }
 
 .sensor.normal {
@@ -71,7 +71,7 @@
     top: 10px;
     right: 10px;
     font-size: 20px;
-    color: #0077be; /* Aqua icon color */
+    color: #0077be;
 }
 
 /* Updated back button to use the global button style */

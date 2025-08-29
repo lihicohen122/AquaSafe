@@ -10,7 +10,7 @@ async def contact_us(request: Request, background_tasks: BackgroundTasks):
     name = data.get("name", "")
     email = data.get("email", "")
     message = data.get("message", "")
-    subject = f"פנייה חדשה מהאתר AquaSafe"
+    subject = f"New inquiry from AquaSafe website"
     body = f"Name: {name}\nEmail: {email}\nMessage: {message}"
     recipients = ["noa4000@gmail.com", "lihicohen122@gmail.com"]
     def send_email(name, email, message):

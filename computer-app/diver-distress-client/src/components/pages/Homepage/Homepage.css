@@ -1,5 +1,5 @@
 .homepage-container {
-    composes: container from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
+    composes: container from '../styles/GlobalStyles.css';
     font-family: Arial, sans-serif;
     text-align: center;
     background: linear-gradient(to bottom, #0077be, #00aaff);
@@ -28,7 +28,7 @@
 }
 
 .group-item {
-    composes: card from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
+    composes: card from '../styles/GlobalStyles.css'; 
     background: white;
     color: #0077be;
     padding: 10px 15px;
@@ -45,7 +45,7 @@
 }
 
 .add-group-button {
-    composes: button from '../styles/GlobalStyles.css'; /* שימוש במחלקה הגלובלית */
+    composes: button from '../styles/GlobalStyles.css'; 
     background: #005f99;
     color: white;
     border: none;

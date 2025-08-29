@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate, Link, useParams } from 'react-router-dom';
-import '../styles/GlobalStyles.css';
-import "./SensorDashboard.css"; // CSS file for design 
+import '../../../../../styles/GlobalStyles.css';
+import "./SensorDashboard.css";
 
 //exporting this page
 export default function SensorDashboard() {
@@ -14,7 +14,7 @@ export default function SensorDashboard() {
   useEffect(() => {
     axios.get(`http://localhost:5000/groups/${groupId}`)
       .then(response => {
-        console.log("Group response:", response.data); // 🟡 חשוב!
+        console.log("Group response:", response.data);
         if (response.data.divers) {
           setDivers(response.data.divers);
         } else {

@@ -1,7 +1,7 @@
 from sqlalchemy.orm import Session
 from database import SessionLocal
 
-# FastAPI יקרא לפונקציה הזו עבור כל בקשה
+# FastAPI will call this function for each request
 def get_db():
     db = SessionLocal()
     try:

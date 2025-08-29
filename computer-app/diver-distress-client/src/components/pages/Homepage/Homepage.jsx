@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import '../styles/GlobalStyles.css';
+import '../../../styles/GlobalStyles.css';
 import "./Homepage.css";
-import AddGroup from "./AddGroup";
+import AddGroup from "./Groups/AddGroup";
 
 const Homepage = () => {
   const navigate = useNavigate();

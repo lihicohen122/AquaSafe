@@ -1,5 +1,6 @@
 import React from "react";
 import "./About.css";
+import aboutImage from "../../../images/team-photo.jpg";
 
 export default function About() {
   return (
@@ -15,6 +16,9 @@ export default function About() {
       <div className="about-names">
         <strong>Noa Halali</strong><br />
         <strong>Lihi Cohen</strong>
+      </div>
+      <div className="about-image">
+        <img src={aboutImage} alt="About Us" />
       </div>
     </div>
   );

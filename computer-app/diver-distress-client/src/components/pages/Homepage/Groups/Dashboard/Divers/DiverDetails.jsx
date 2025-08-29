@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import "../styles/GlobalStyles.css";
+import "../../../../../../styles/GlobalStyles.css";
 import "./DiverDetails.css";
 
 export default function DiverDetails() {
@@ -11,10 +11,10 @@ export default function DiverDetails() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    console.log("Fetching diver details for ID:", diverId.trim()); // בדיקת ה-id
+    console.log("Fetching diver details for ID:", diverId.trim());
     axios.get(`http://localhost:5000/divers/${diverId.trim()}`)
       .then(response => {
-        console.log("Diver details fetched:", response.data); // בדיקת התגובה
+        console.log("Diver details fetched:", response.data);
         setDiver(response.data);
       })
       .catch(error => {

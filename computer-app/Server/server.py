@@ -11,7 +11,7 @@ from routes.group_routes import router as group_router
 from routes.contact_routes import router as contact_router
 from database import Base, engine
 
-# יצירת הטבלאות במסד הנתונים אם הן לא קיימות
+# Create database tables if they don't exist
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -25,7 +25,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Routes for sensors (עדיין לא הועברו למסד, עובדים על זה)
+# Routes for sensors (not yet migrated to database, work in progress)
 sensor_manager = SensorManager(None)
 
 @app.get("/sensors", response_model=list[Sensor])
@@ -40,7 +40,7 @@ def read_root():
 def get_status():
     return {"status": "Server is running"}
 
-# מחברים את הנתיבים של divers ו-groups
+# Connect divers and groups routes
 app.include_router(diver_router, prefix="/divers")
 app.include_router(group_router, prefix="/groups")
 app.include_router(contact_router)
