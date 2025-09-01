@@ -46,6 +46,7 @@ class MainActivity : Activity(), SensorEventListener {
     private var heartRateSensor: Sensor? = null
     private val scope = CoroutineScope(Dispatchers.Main + Job())
     private var isTransmitting = false
+    private var transmissionJob: Job? = null // Job for periodic transmission
 
     // UI Elements
     private lateinit var statusTextView: TextView
@@ -65,22 +66,38 @@ class MainActivity : Activity(), SensorEventListener {
         setupSensors() // Initialize sensors
 
         transmitButton.setOnClickListener {
-            // Get Diver ID and BPM from UI
-            val diverId = diverIdEditText.text.toString()
-            val bpmText = heartRateTextView.text.toString().filter { it.isDigit() }
+            if (transmissionJob == null) {
+                // Start periodic transmission
+                val diverId = diverIdEditText.text.toString()
+                val bpmText = heartRateTextView.text.toString().filter { it.isDigit() }
 
-            // Basic validation
-            if (diverId.isBlank()) {
-                Toast.makeText(this, "Please enter Diver ID", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
-            if (bpmText.isBlank()) {
-                Toast.makeText(this, "Waiting for BPM data", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+                // Basic validation
+                if (diverId.isBlank()) {
+                    Toast.makeText(this, "Please enter Diver ID", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
+                if (bpmText.isBlank()) {
+                    Toast.makeText(this, "Waiting for BPM data", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
 
-            val message = "$diverId,$bpmText" // Construct the message string
-            transmitMessage(message) // Start transmission
+                transmitButton.text = "Stop Transmission"
+                statusTextView.text = "Status: Transmitting..."
+                transmissionJob = scope.launch {
+                    while (isActive) {
+                        val currentBpm = heartRateTextView.text.toString().filter { it.isDigit() }
+                        val message = "$diverId,$currentBpm"
+                        transmitMessage(message)
+                        delay(20_000) // 20 seconds
+                    }
+                }
+            } else {
+                // Stop periodic transmission
+                transmissionJob?.cancel()
+                transmissionJob = null
+                transmitButton.text = "Start Transmission"
+                statusTextView.text = "Status: Idle"
+            }
         }
     }
 
@@ -89,7 +106,7 @@ class MainActivity : Activity(), SensorEventListener {
         statusTextView = TextView(this).apply { text = "Status: Idle"; textSize = 16f }
         heartRateTextView = TextView(this).apply { text = "Heart Rate: --"; textSize = 20f }
         diverIdEditText = EditText(this).apply { hint = "Enter Diver ID here" }
-        transmitButton = Button(this).apply { text = "Transmit Once" }
+        transmitButton = Button(this).apply { text = "Start Transmission" }
 
         // Use LinearLayout to arrange components vertically on the screen
         val layout = LinearLayout(this).apply {
