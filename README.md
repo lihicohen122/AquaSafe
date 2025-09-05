@@ -10,6 +10,40 @@ Link to our project document: https://docs.google.com/document/d/1Od5sGDTFNw2J0y
 
 ---
 
+## Recent Acoustic Server Improvements ⚡
+
+### Problem Solved
+The acoustic server was missing characters during transmission (e.g., receiving "i,89" instead of "li,89").
+
+### Solutions Implemented
+1. **Reduced Processing Window**: From 0.3s to 0.25s for faster character detection
+2. **Lower Sensitivity Thresholds**: Improved detection of weaker signals
+3. **Increased Frequency Tolerance**: Better matching (300Hz tolerance instead of 200Hz)
+4. **Enhanced Debugging**: More detailed logging to track signal detection
+5. **Overlapping Buffer Processing**: Better continuity in signal processing
+6. **Reduced Debounce Time**: Faster character recognition (0.2s instead of 0.4s)
+
+### Debugging Features Added
+- Shows weak signals that are detected but below threshold
+- Better frequency-to-character mapping in debug output
+- More detailed amplitude and frequency logging
+
+---
+
+## Acoustic Communication Protocol
+
+### Frequency Mapping
+- **Numbers (0-9)**: 3000-4800 Hz range
+- **Letters (a-z)**: 5000-10000 Hz range  
+- **Special chars**: Comma (2000 Hz), Hyphen (2200 Hz)
+- **Control signals**: Start (1200 Hz), End (11000 Hz)
+
+### Message Format
+Messages follow the pattern: `{diver_id},{heart_rate}`
+- Example: `li,89` (Diver ID "li", Heart Rate 89 BPM)
+
+---
+
 ## Project Structure
 
 ```
