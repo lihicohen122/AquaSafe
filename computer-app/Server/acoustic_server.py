@@ -32,7 +32,7 @@ END_FREQ = 11000  # Match watch app's end frequency
 # Timing parameters
 FFT_WINDOW_SIZE = int(0.25 * RATE)  # Reduced for faster processing
 MAX_SILENT_TIME = 15.0  
-DIGIT_WAIT_TIME = 1.0  # Time to wait for additional digits after receiving a valid but potentially incomplete BPM
+DIGIT_WAIT_TIME = 0  # Time to wait for additional digits after receiving a valid but potentially incomplete BPM
 
 # Signal strength thresholds
 CHAR_THRESHOLD = 5e2  # Reduced threshold for better sensitivity
