@@ -103,19 +103,51 @@ class MainActivity : Activity(), SensorEventListener {
 
     private fun setupUI() {
         // Initialize UI elements
-        statusTextView = TextView(this).apply { text = "Status: Idle"; textSize = 16f }
-        heartRateTextView = TextView(this).apply { text = "Heart Rate: --"; textSize = 20f }
-        diverIdEditText = EditText(this).apply { hint = "Enter Diver ID here" }
-        transmitButton = Button(this).apply { text = "Start Transmission" }
+        statusTextView = TextView(this).apply {
+            text = "Status: Idle"
+            textSize = 10f // Even smaller text
+            textAlignment = TextView.TEXT_ALIGNMENT_CENTER // Center align
+        }
+        heartRateTextView = TextView(this).apply {
+            text = "Heart Rate: --"
+            textSize = 12f // Even smaller text
+            textAlignment = TextView.TEXT_ALIGNMENT_CENTER // Center align
+        }
+        diverIdEditText = EditText(this).apply {
+            hint = "Enter Diver ID here"
+            textSize = 12f // Even smaller text
+            setPadding(0, 8, 0, 8) // Minimal vertical padding
+        }
+        transmitButton = Button(this).apply {
+            text = "Start Transmission"
+            textSize = 12f // Even smaller text
+        }
 
         // Use LinearLayout to arrange components vertically on the screen
         val layout = LinearLayout(this).apply {
             orientation = LinearLayout.VERTICAL
-            setPadding(16, 16, 16, 16) // Add some padding around the layout
-            addView(diverIdEditText)
-            addView(transmitButton)
-            addView(statusTextView)
-            addView(heartRateTextView)
+            setPadding(8, 16, 8, 8) // Minimal padding
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+            gravity = android.view.Gravity.CENTER // Center all items
+            addView(diverIdEditText, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, 0, 0, 8) })
+            addView(transmitButton, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, 0, 0, 8) })
+            addView(statusTextView, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ).apply { setMargins(0, 0, 0, 8) })
+            addView(heartRateTextView, LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+            ))
         }
         setContentView(layout) // Set the layout as the content view
     }
