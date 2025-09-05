@@ -12,10 +12,6 @@ import android.media.AudioFormat
 import android.media.AudioTrack
 import android.os.Bundle
 import android.util.Log
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import kotlinx.coroutines.*
@@ -49,14 +45,12 @@ class MainActivity : Activity(), SensorEventListener {
     private var transmissionJob: Job? = null // Job for periodic transmission
 
     // UI Elements
-    private lateinit var statusTextView: TextView
-    private lateinit var heartRateTextView: TextView
-    private lateinit var transmitButton: Button
-    private lateinit var diverIdEditText: EditText
+    private lateinit var uiManager: UIManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setupUI() // Build the UI
+        uiManager = UIManager(this)
+        setContentView(uiManager.layout)
 
         // Request BODY_SENSORS permission for heart rate sensor
         if (checkSelfPermission(Manifest.permission.BODY_SENSORS) != PackageManager.PERMISSION_GRANTED) {
@@ -65,11 +59,11 @@ class MainActivity : Activity(), SensorEventListener {
 
         setupSensors() // Initialize sensors
 
-        transmitButton.setOnClickListener {
+        uiManager.transmitButton.setOnClickListener {
             if (transmissionJob == null) {
                 // Start periodic transmission
-                val diverId = diverIdEditText.text.toString()
-                val bpmText = heartRateTextView.text.toString().filter { it.isDigit() }
+                val diverId = uiManager.diverIdEditText.text.toString()
+                val bpmText = uiManager.heartRateTextView.text.toString().filter { it.isDigit() }
 
                 // Basic validation
                 if (diverId.isBlank()) {
@@ -81,11 +75,11 @@ class MainActivity : Activity(), SensorEventListener {
                     return@setOnClickListener
                 }
 
-                transmitButton.text = "Stop Transmission"
-                statusTextView.text = "Status: Transmitting..."
+                uiManager.transmitButton.text = "Stop Transmission"
+                uiManager.setStatus("Status: Transmitting...")
                 transmissionJob = scope.launch {
                     while (isActive) {
-                        val currentBpm = heartRateTextView.text.toString().filter { it.isDigit() }
+                        val currentBpm = uiManager.heartRateTextView.text.toString().filter { it.isDigit() }
                         val message = "$diverId,$currentBpm"
                         transmitMessage(message)
                         delay(20_000) // 20 seconds
@@ -95,68 +89,17 @@ class MainActivity : Activity(), SensorEventListener {
                 // Stop periodic transmission
                 transmissionJob?.cancel()
                 transmissionJob = null
-                transmitButton.text = "Start Transmission"
-                statusTextView.text = "Status: Idle"
+                uiManager.transmitButton.text = "Start Transmission"
+                uiManager.setStatus("Status: Idle")
             }
         }
-    }
-
-    private fun setupUI() {
-        // Initialize UI elements
-        statusTextView = TextView(this).apply {
-            text = "Status: Idle"
-            textSize = 10f // Even smaller text
-            textAlignment = TextView.TEXT_ALIGNMENT_CENTER // Center align
-        }
-        heartRateTextView = TextView(this).apply {
-            text = "Heart Rate: --"
-            textSize = 12f // Even smaller text
-            textAlignment = TextView.TEXT_ALIGNMENT_CENTER // Center align
-        }
-        diverIdEditText = EditText(this).apply {
-            hint = "Enter Diver ID here"
-            textSize = 12f // Even smaller text
-            setPadding(0, 8, 0, 8) // Minimal vertical padding
-        }
-        transmitButton = Button(this).apply {
-            text = "Start Transmission"
-            textSize = 12f // Even smaller text
-        }
-
-        // Use LinearLayout to arrange components vertically on the screen
-        val layout = LinearLayout(this).apply {
-            orientation = LinearLayout.VERTICAL
-            setPadding(8, 16, 8, 8) // Minimal padding
-            layoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT
-            )
-            gravity = android.view.Gravity.CENTER // Center all items
-            addView(diverIdEditText, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, 0, 0, 8) })
-            addView(transmitButton, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, 0, 0, 8) })
-            addView(statusTextView, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply { setMargins(0, 0, 0, 8) })
-            addView(heartRateTextView, LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ))
-        }
-        setContentView(layout) // Set the layout as the content view
     }
 
     private fun setupSensors() {
         sensorManager = getSystemService(SENSOR_SERVICE) as SensorManager
         heartRateSensor = sensorManager.getDefaultSensor(Sensor.TYPE_HEART_RATE)
         if (heartRateSensor == null) {
-            heartRateTextView.text = "Heart rate sensor not available."
+            uiManager.setHeartRate("Heart rate sensor not available.")
         }
     }
 
@@ -170,50 +113,41 @@ class MainActivity : Activity(), SensorEventListener {
             return
         }
 
-        // Transmission must run in a coroutine (similar to a background thread)
-        // to avoid blocking the main UI thread and freezing the app.
         scope.launch(Dispatchers.Default) {
             isTransmitting = true
-            runOnUiThread { // Update UI on the main thread
-                statusTextView.text = "Status: Transmitting..."
-                transmitButton.isEnabled = false
+            runOnUiThread {
+                uiManager.setStatus("Status: Transmitting...")
+                uiManager.transmitButton.isEnabled = false
             }
 
-            val audioTrack = createAudioTrack() // Create AudioTrack for playing tones
-            audioTrack.play() // Start the audio playback stream
+            val audioTrack = createAudioTrack()
+            audioTrack.play()
 
-            // 1. Play START tone
             playTone(audioTrack, startFreq, chunkDuration)
-            delay((chunkDuration * 1000).toLong()) // Wait for tone to finish
-            delay((silentDuration * 1000).toLong()) // Wait for silence duration
+            delay((chunkDuration * 1000).toLong())
+            delay((silentDuration * 1000).toLong())
 
-            // 2. Play message character by character
-            // This loop ensures characters are played in order, including the comma.
             message.forEach { char ->
                 charToFreq[char]?.let { freq ->
                     playTone(audioTrack, freq, chunkDuration)
-                    delay((chunkDuration * 1000).toLong()) // Wait for tone to finish
-                    delay((silentDuration * 1000).toLong()) // Wait for silence duration
+                    delay((chunkDuration * 1000).toLong())
+                    delay((silentDuration * 1000).toLong())
                 } ?: run {
                     Log.w("AcousticComm", "Character '$char' not found in frequency map.")
                 }
             }
 
-            // 3. Play END tone - This must be the very last tone for the server to detect message end!
-            // NOTE: With time-based server, the END tone is less critical for message termination,
-            // but it's good practice to keep it for completeness and potential future use.
             playTone(audioTrack, endFreq, chunkDuration)
-            delay((chunkDuration * 1000).toLong()) // Wait for tone to finish
-            delay((silentDuration * 1000).toLong()) // Final silence after end tone
+            delay((chunkDuration * 1000).toLong())
+            delay((silentDuration * 1000).toLong())
 
-            // Stop and release AudioTrack resources
             audioTrack.stop()
             audioTrack.release()
 
             isTransmitting = false
-            runOnUiThread { // Update UI on the main thread
-                statusTextView.text = "Status: Idle"
-                transmitButton.isEnabled = true
+            runOnUiThread {
+                uiManager.setStatus("Status: Idle")
+                uiManager.transmitButton.isEnabled = true
             }
         }
     }
@@ -287,7 +221,7 @@ class MainActivity : Activity(), SensorEventListener {
         if (event?.sensor?.type == Sensor.TYPE_HEART_RATE) {
             val heartRate = event.values[0]
             if (heartRate > 0) { // Only display valid heart rate values
-                heartRateTextView.text = "Heart Rate: ${heartRate.toInt()} bpm"
+                uiManager.setHeartRate("Heart Rate: ${heartRate.toInt()} bpm")
             }
         }
     }
