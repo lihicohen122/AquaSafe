@@ -2,10 +2,11 @@
     max-width: 500px;
     margin: auto;
     padding: 20px;
-    background-color: #f3f7fa;
+    background-color: var(--card-background);
     border-radius: 10px;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     text-align: center;
+    transition: background-color 0.3s ease;
   }
   
   .diver-form input,
@@ -15,24 +16,28 @@
     padding: 10px;
     margin: 10px 0;
     border-radius: 5px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--secondary-color);
     font-size: 16px;
     box-sizing: border-box;
     padding-right: 16px;
+    background-color: var(--card-background);
+    color: var(--card-text-color);
+    transition: border-color 0.3s ease, background-color 0.3s ease, color 0.3s ease;
   }
   
   .diver-form button {
-    background-color: #007bff;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--text-color);
     border: none;
     padding: 10px 20px;
     margin-top: 15px;
     border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
   }
   
   .diver-form button:hover {
-    background-color: #0056b3;
+    background-color: var(--secondary-color);
   }
   
   button {
@@ -40,6 +45,7 @@
   }
 
   .add-diver-container h2 {
-    color: #003366;
+    color: var(--primary-color);
     font-weight: bold;
+    transition: color 0.3s ease;
   }

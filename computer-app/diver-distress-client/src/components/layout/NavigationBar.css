@@ -4,12 +4,13 @@
   left: 0;
   height: 100%;
   width: 200px;
-  background-color: #005f99;
-  color: white;
+  background-color: var(--primary-color);
+  color: var(--text-color);
   display: flex;
   flex-direction: column;
   align-items: center;
   padding-top: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .nav-logo {
@@ -23,8 +24,9 @@
   height: 55px;
   border-radius: 50%;
   object-fit: cover;
-  border: 1px solid white;
+  border: 1px solid var(--text-color);
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: border-color 0.3s ease;
 }
 
 .navigation-bar ul {
@@ -39,15 +41,15 @@
 }
 
 .navigation-bar a {
-  color: white;
+  color: var(--text-color);
   text-decoration: none;
   font-size: 1.2rem;
   display: block;
   width: 100%;
   padding: 10px 0;
-  transition: background 0.3s;
+  transition: background 0.3s, color 0.3s ease;
 }
 
 .navigation-bar a:hover {
-  background-color: #004f80;
+  background-color: var(--secondary-color);
 }

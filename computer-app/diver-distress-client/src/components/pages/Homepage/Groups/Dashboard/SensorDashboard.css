@@ -1,9 +1,10 @@
 .dashboard {
     composes: container from '../styles/GlobalStyles.css';
-    background: linear-gradient(to bottom, #0077be, #00aaff);
+    background: var(--background-gradient);
     padding: 20px;
     min-height: 100vh;
-    color: white; /* Ensure text is visible */
+    color: var(--text-color);
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 .alert-box {
@@ -27,13 +28,12 @@
 
 .sensor {
     position: relative;
-    background-color: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+    background-color: var(--card-background);
     padding: 16px;
     border-radius: 12px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    composes: card from '../styles/GlobalStyles.css';
-    color: #0077be; /* Aqua text color */
-    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition */
+    color: var(--card-text-color);
+    transition: transform 0.3s ease, box-shadow 0.3s ease, background-color 0.3s ease, color 0.3s ease;
 }
 
 .sensor:hover {
@@ -47,7 +47,8 @@
     justify-content: flex-start;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #005f99;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
 }
 
 .sensor.normal {
@@ -71,10 +72,26 @@
     top: 10px;
     right: 10px;
     font-size: 20px;
-    color: #0077be;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
 }
 
 /* Updated back button to use the global button style */
 .back-button {
-    composes: button from '../styles/GlobalStyles.css';
+    background-color: var(--primary-color);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 20px;
+    font-size: 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, color 0.3s ease;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.back-button:hover {
+    background-color: var(--secondary-color);
+    transform: scale(1.05);
 }

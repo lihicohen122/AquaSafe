@@ -47,7 +47,7 @@ export default function SensorDashboard() {
         <h2>Alert:</h2>
         {criticalDiver ? (
           <div className="alert-text">
-            🔴 DIVER #{criticalDiver.id} IS IN CRITICAL STATE- BPM {criticalDiver.bpm}
+            🆘 DIVER #{criticalDiver.id} IS IN CRITICAL STATE- BPM {criticalDiver.bpm}
           </div>
         ) : (
           <p>No Current Alerts</p>
@@ -64,9 +64,9 @@ export default function SensorDashboard() {
         {divers.map(diver => (
           <div key={diver.id} className={getStatusClass(diver.status)}>
             <span className="status-icon">
-              {diver.status === "normal" && "✔️"}
+              {diver.status === "normal" && "✅"}
               {diver.status === "warning" && "⚠️"}
-              {diver.status === "critical" && "🔴"}
+              {diver.status === "critical" && "🆘"}
             </span>
             <div className="sensor-header">
               <Link to={`/diver/${diver.id}`}>Diver: {diver.id}</Link>

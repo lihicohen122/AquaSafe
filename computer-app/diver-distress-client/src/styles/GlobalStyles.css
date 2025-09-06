@@ -1,13 +1,55 @@
+/* Global Theme Variables */
+:root {
+  /* Ocean Theme (Default) */
+  --primary-color: #0077be;
+  --secondary-color: #00aaff;
+  --background-gradient: linear-gradient(to bottom, #0077be, #00aaff);
+  --text-color: white;
+  --card-background: rgba(255, 255, 255, 0.9);
+  --card-text-color: #0077be;
+}
+
+/* Ocean Theme Class (Default) */
+.theme-ocean {
+  --primary-color: #0077be;
+  --secondary-color: #00aaff;
+  --background-gradient: linear-gradient(to bottom, #0077be, #00aaff);
+  --text-color: white;
+  --card-background: rgba(255, 255, 255, 0.9);
+  --card-text-color: #0077be;
+}
+
+/* Coral Theme */
+.theme-coral {
+  --primary-color: #ff7043;
+  --secondary-color: #ffab40;
+  --background-gradient: linear-gradient(to bottom, #ff7043, #ffab40);
+  --text-color: white;
+  --card-background: rgba(255, 255, 255, 0.9);
+  --card-text-color: #ff7043;
+}
+
+/* Deep Sea Theme */
+.theme-deep {
+  --primary-color: #1a237e;
+  --secondary-color: #3f51b5;
+  --background-gradient: linear-gradient(to bottom, #1a237e, #3f51b5);
+  --text-color: white;
+  --card-background: rgba(255, 255, 255, 0.9);
+  --card-text-color: #1a237e;
+}
+
 /* Global background settings */
 body {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
-    background: linear-gradient(to bottom, #001f3f, #003366); /* Underwater background */
-    color: white;
+    background: var(--background-gradient);
+    color: var(--text-color);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+    transition: background 0.3s ease, color 0.3s ease;
 }
 
 /* Global container class */
@@ -21,8 +63,8 @@ body {
 
 /* General button styling */
 .button {
-    background-color: #004080;
-    color: white;
+    background-color: var(--primary-color);
+    color: var(--text-color);
     border: none;
     padding: 10px 20px;
     font-size: 1rem;
@@ -35,17 +77,18 @@ body {
 }
 
 .button:hover {
-    background-color: #0059b3;
+    background-color: var(--secondary-color);
     transform: scale(1.05);
 }
 
 /* Global card class */
 .card {
-    background-color: rgba(0, 51, 102, 0.8);
+    background-color: var(--card-background);
     border-radius: 10px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     padding: 15px;
-    color: #cce7ff;
+    color: var(--card-text-color);
     text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 

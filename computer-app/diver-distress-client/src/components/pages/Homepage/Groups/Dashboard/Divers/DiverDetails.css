@@ -1,11 +1,12 @@
 .diver-details {
-  background: linear-gradient(to bottom, #0077be, #00aaff);
-  color: white;
+  background: var(--background-gradient);
+  color: var(--text-color);
   padding: 20px;
   border-radius: 10px;
   max-width: 400px;
   margin: 20px auto;
   text-align: left;
+  transition: background 0.3s ease, color 0.3s ease;
 }
 
 .diver-details p {
@@ -13,16 +14,16 @@
 }
 
 .back-button {
-  background: #005f99;
-  color: white;
+  background: var(--primary-color);
+  color: var(--text-color);
   border: none;
   padding: 10px 20px;
   font-size: 1rem;
   border-radius: 5px;
   cursor: pointer;
-  transition: background 0.2s;
+  transition: background 0.2s, color 0.3s ease;
 }
 
 .back-button:hover {
-  background: #004f80;
+  background: var(--secondary-color);
 }
